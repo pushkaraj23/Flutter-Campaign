@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:my_diary/components/note.dart';
@@ -56,13 +57,16 @@ class _HomeState extends State<Home> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                     const NotePage(title: "", content: "")));
+                                  builder: (context) => const NotePage(
+                                        title: "",
+                                        content: "",
+                                        id: '',
+                                      )));
                         },
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            SizedBox(width: swidth*2),
+                            SizedBox(width: swidth * 2),
                             SizedBox(
                                 height: sheight * 4,
                                 child: Image.asset("assets/add.png")),
@@ -91,26 +95,44 @@ class _HomeState extends State<Home> {
               bottom: 0,
               left: swidth * 10,
               child: Container(
-                width: swidth * 80,
-                height: sheight * 71,
-                child: ListView.builder(
-                  itemCount: 5,
-                  itemBuilder: (context, index) => GestureDetector(
-                      child: Note(
-                        title: 'Note ${index + 1}',
-                        note: "Welcome to GDSC Flutter Campaign :)",
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => NotePage(
-                                    title: 'Note ${index + 1}',
-                                    content:
-                                        "Welcome to GDSC Flutter Campaign :)")));
-                      }),
-                ),
-              ),
+                  width: swidth * 80,
+                  height: sheight * 71,
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection("Notes")
+                        .snapshots(),
+                    builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(
+                            child: CircularProgressIndicator(
+                          color: Colors.grey.shade700,
+                        ));
+                      }
+
+                      if (snapshot.hasData) {
+                        return ListView.builder(
+                          itemCount: snapshot.data!.docs.length,
+                          itemBuilder: (context, index) => GestureDetector(
+                              child: Note(
+                                title: snapshot.data!.docs[index]['title'],
+                                note: snapshot.data!.docs[index]['content'],
+                              ),
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => NotePage(
+                                              title: snapshot.data!.docs[index]['title'],
+                                              content:
+                                                  snapshot.data!.docs[index]['content'],
+                                              id: snapshot.data!.docs[index].id,
+                                            )));
+                              }),
+                        );
+                      }
+                      return const Center(child: Text("There's no Notes.."));
+                    },
+                  )),
             ),
           ],
         ),

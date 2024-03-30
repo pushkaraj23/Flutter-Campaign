@@ -27,25 +27,27 @@ class _NoteState extends State<Note> {
             borderRadius: BorderRadius.circular(20)),
         child: Padding(
             padding: EdgeInsets.all(sheight * 2),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.title,
-                  style: GoogleFonts.raleway(
-                    fontSize: sheight * 2.3,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.title,
+                    style: GoogleFonts.raleway(
+                      fontSize: sheight * 2.3,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                ),
-                SizedBox(height: sheight * 0.7),
-                Text(
-                  widget.note,
-                  style: GoogleFonts.raleway(
-                      color: const Color.fromARGB(226, 223, 211, 200),
-                      fontSize: sheight * 1.5),
-                )
-              ],
+                  SizedBox(height: sheight * 0.7),
+                  Text(
+                    widget.note,
+                    style: GoogleFonts.raleway(
+                        color: const Color.fromARGB(226, 223, 211, 200),
+                        fontSize: sheight * 1.5),
+                  )
+                ],
+              ),
             )),
       ),
     );

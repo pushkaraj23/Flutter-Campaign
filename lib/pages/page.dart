@@ -1,11 +1,13 @@
 
+import "package:cloud_firestore/cloud_firestore.dart";
 import "package:flutter/material.dart";
 import "package:google_fonts/google_fonts.dart";
 
 class NotePage extends StatefulWidget {
   final String title;
   final String content;
-  const NotePage({super.key, required this.title, required this.content});
+  final String id;
+  const NotePage({super.key, required this.title, required this.content, required this.id});
 
   @override
   State<NotePage> createState() => _NotePageState();
@@ -65,6 +67,7 @@ class _NotePageState extends State<NotePage> {
                         child: Image.asset('assets/delete.png'),
                       ),
                       onTap: () {
+                        FirebaseFirestore.instance.collection("Notes").doc(widget.id).delete();
                         Navigator.pop(context);
                       },
                     )
@@ -100,7 +103,20 @@ class _NotePageState extends State<NotePage> {
                     shape:const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
                     backgroundColor: const Color.fromARGB(192, 223, 90, 83)
                   ),
-                  onPressed: () {},
+                  onPressed: () async {
+                    if (widget.id == '') {
+                      FirebaseFirestore.instance.collection("Notes").add({
+                        'title': _noteTitle.text,
+                        'content': _noteContent.text
+                      });
+                    } else {
+                      FirebaseFirestore.instance.collection("Notes").doc(widget.id).update({
+                        'title': _noteTitle.text,
+                        'content': _noteContent.text
+                      });
+                    }
+                    Navigator.pop(context);
+                  },
                   child: Text("Save",
                       style: GoogleFonts.raleway(
                           fontSize: 1.7 * sheight,
